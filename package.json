@@ -1,7 +1,7 @@
 {
-  "name": "titanbot-custom",
+  "name": "igris-bit",
   "version": "2.1.0",
-  "description": "Modular Ultimate Community Bot by Touchpoint Support",
+  "description": "Bot Made By b2k_darkunite",
   "main": "src/app.js",
   "type": "module",
   "scripts": {
