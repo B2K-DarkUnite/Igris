@@ -271,4 +271,5 @@ export default {
       await handleInteractionError(interaction, error, { commandName: 'commands' });
     }
   },
+  prefixExecute()
 };
