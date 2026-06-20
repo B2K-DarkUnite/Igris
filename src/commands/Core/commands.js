@@ -271,5 +271,91 @@ export default {
       await handleInteractionError(interaction, error, { commandName: 'commands' });
     }
   },
-  prefixExecute()
+  prefixExecute()async prefixExecute(message, args, config, client) {
+    try {
+      if (!message.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
+        return message.reply(
+          '❌ You need the **Manage Server** permission to manage commands.'
+        );
+      }
+
+      const subcommand = args[0]?.toLowerCase();
+
+      if (!subcommand) {
+        return message.reply(
+          'Usage:\n' +
+          '`!commands dashboard`\n' +
+          '`!commands disable category <category>`\n' +
+          '`!commands disable command <command>`\n' +
+          '`!commands enable category <category>`\n' +
+          '`!commands enable command <command>`'
+        );
+      }
+
+      if (subcommand === 'dashboard') {
+        return message.reply(
+          '⚠️ Interactive dashboard is only available through `/commands dashboard`.'
+        );
+      }
+
+      const scope = args[1]?.toLowerCase();
+      const target = args.slice(2).join(' ');
+
+      if (!scope || !target) {
+        return message.reply('❌ Invalid usage.');
+      }
+
+      if (subcommand === 'disable') {
+        if (scope === 'category') {
+          const category = resolveCategoryChoice(client, target);
+
+          if (!category) {
+            return message.reply(`❌ No category matched \`${target}\`.`);
+          }
+
+          await disableCategory(client, message.guild.id, category.key);
+
+          return message.reply(
+            `✅ Category **${category.displayName}** has been disabled.`
+          );
+        }
+
+        await disableCommand(client, message.guild.id, target.toLowerCase());
+
+        return message.reply(
+          `✅ Command \`${target.toLowerCase()}\` has been disabled.`
+        );
+      }
+
+      if (subcommand === 'enable') {
+        if (scope === 'category') {
+          const category = resolveCategoryChoice(client, target);
+
+          if (!category) {
+            return message.reply(`❌ No category matched \`${target}\`.`);
+          }
+
+          await enableCategory(client, message.guild.id, category.key);
+
+          return message.reply(
+            `✅ Category **${category.displayName}** has been enabled.`
+          );
+        }
+
+        await enableCommand(client, message.guild.id, target.toLowerCase());
+
+        return message.reply(
+          `✅ Command \`${target.toLowerCase()}\` has been enabled.`
+        );
+      }
+    } catch (error) {
+      logger.error('commands prefix command failed', {
+        error: error.message,
+      });
+
+      return message.reply(
+        '❌ An error occurred while processing the command.'
+      );
+    }
+  },
 };
